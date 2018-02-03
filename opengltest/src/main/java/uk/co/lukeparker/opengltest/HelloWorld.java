@@ -40,6 +40,7 @@ import org.lwjgl.system.MemoryStack;
 import uk.co.lukeparker.opengltest.renderEngine.Loader;
 import uk.co.lukeparker.opengltest.renderEngine.RawModel;
 import uk.co.lukeparker.opengltest.renderEngine.Renderer;
+import uk.co.lukeparker.opengltest.renderEngine.shaders.StaticShader;
 
 public class HelloWorld {
 	
@@ -120,27 +121,33 @@ public class HelloWorld {
 	private void loop() {
 		GL.createCapabilities();
 		
-		 float[] vertices = {
-				    -0.5f, 0.5f, 0f,
-				    -0.5f, -0.5f, 0f,
-				    0.5f, -0.5f, 0f,
-				    0.5f, -0.5f, 0f,
-				    0.5f, 0.5f, 0f,
-				    -0.5f, 0.5f, 0f
-				  };
+		float[] vertices = {
+				-0.5f,0.5f,0,
+				-0.5f,-0.5f,0,
+				0.5f,-0.5f,0,
+				0.5f,0.5f,0
+		};
 		
-		RawModel model = loader.loadToVAO(vertices);
+		int[] indices = {
+			0,1,3,
+			3,1,2
+		};
+		
+		StaticShader shader = new StaticShader();
+		RawModel model = loader.loadToVAO(vertices, indices);
 		
 		// Run rendering loop until the user has attempted to close the window or has pressed escape
 		while(!glfwWindowShouldClose(window)) {
 			renderer.prepare();
-			
+			shader.start();
 			renderer.render(model);
-			
+			shader.stop();
 			glfwSwapBuffers(window);
 			
 			glfwPollEvents();
 		}
+		
+		shader.cleanUp();
 	}
 	
 	public static void main(String[] args) {
